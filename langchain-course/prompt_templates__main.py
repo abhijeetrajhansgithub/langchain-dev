@@ -13,10 +13,7 @@ _key = os.getenv("OPENROUTER_API_KEY")
 assert _key is not None
 
 llm = ChatOpenRouter(
-    model=_model,
-    api_key=SecretStr(_key),
-    temperature=0,
-    max_tokens=256
+    model=_model, api_key=SecretStr(_key), temperature=0, max_tokens=256
 )
 
 
@@ -43,10 +40,8 @@ Create the following:
         template=summary_template,
     )
 
-    chain = summary_prompt_template | llm # type: ignore
-    response = chain.invoke(input={ # type: ignore
-        "information": information
-    })
+    chain = summary_prompt_template | llm  # type: ignore
+    response = chain.invoke(input={"information": information})  # type: ignore
 
     print("Response: ", response.content)  # type: ignore
 

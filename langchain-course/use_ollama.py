@@ -1,19 +1,20 @@
-from langchain_ollama import ChatOllama
+import os
+
+from dotenv import find_dotenv, load_dotenv
 from langchain_core.prompts import PromptTemplate
-from dotenv import load_dotenv, find_dotenv
-import os 
+from langchain_ollama import ChatOllama
 
 load_dotenv(find_dotenv())
 
 _ollama_server = os.getenv("OLLAMA_SERVER")
-# gemma3:270m 
+# gemma3:270m
 # qwen3:4b
 
 _llm = ChatOllama(
     model="gemma3:270m",
     validate_model_on_init=False,
     temperature=0.8,
-    base_url=_ollama_server
+    base_url=_ollama_server,
 )
 
 _information = """
@@ -33,14 +34,11 @@ Create the following:
 """
 
 _summary_prompt_template = PromptTemplate(
-    input_variables=["information"],
+    input_variables=["information"],  # type: ignore
     template=_summary_template,
 )
 
 chain = _summary_prompt_template | _llm  # type: ignore
-response = chain.invoke(input={  # type: ignore
-    "information": _information
-})
+response = chain.invoke(input={"information": _information})  # type: ignore
 
 print("Response: ", response.content.split("</think>")[-1])  # type: ignore
-
