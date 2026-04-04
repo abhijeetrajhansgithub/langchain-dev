@@ -6,9 +6,9 @@ from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
 from tavily import TavilyClient  # type: ignore
 
-_tavily = TavilyClient()
-
 load_dotenv(find_dotenv())
+
+_tavily = TavilyClient()
 
 _ollama_server = os.getenv("OLLAMA_SERVER")
 
@@ -63,7 +63,7 @@ def main():
     print("Hello from react-search-agent!")
 
     result = _agent.invoke({  # type: ignore
-        "messages": [HumanMessage(content="What's the weather in Tokyo?")]
+        "messages": [HumanMessage(content="What's the weather in Bengaluru?")]
     })
 
     print("Result: ", result)
