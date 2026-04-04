@@ -1,5 +1,6 @@
-from dotenv import load_dotenv, find_dotenv
 import os
+
+from dotenv import find_dotenv, load_dotenv
 from langchain.agents import create_agent  # type: ignore
 from langchain.tools import tool  # type: ignore
 from langchain_core.messages import HumanMessage
@@ -23,9 +24,8 @@ def search(query: str) -> str:
         The search result
     """
     print(f"Searching for: {query}")
-    
-    return "Tokyo's weather is sunny."
 
+    return "Tokyo's weather is sunny."
 
 
 # -------------------------------------------------------
@@ -57,9 +57,11 @@ _agent = create_agent(  # type: ignore
 def main():
     print("Hello from react-search-agent!")
 
-    result = _agent.invoke({  # type: ignore
-        "messages": [HumanMessage(content="What's the weather in Tokyo?")]
-    })
+    result = _agent.invoke(
+        {  # type: ignore
+            "messages": [HumanMessage(content="What's the weather in Tokyo?")]
+        }
+    )
 
     print("Result: ", result)
 

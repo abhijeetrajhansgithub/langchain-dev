@@ -1,5 +1,6 @@
-from dotenv import load_dotenv, find_dotenv
 import os
+
+from dotenv import find_dotenv, load_dotenv
 from langchain.agents import create_agent  # type: ignore
 from langchain.tools import tool  # type: ignore
 from langchain_core.messages import HumanMessage
@@ -13,10 +14,6 @@ _ollama_server = os.getenv("OLLAMA_SERVER")
 
 # -------------------------------------------------------
 # -------------------------------------------------------
-
-
-
-
 
 
 # -------------------------------------------------------
@@ -49,9 +46,11 @@ _agent = create_agent(  # type: ignore
 def main():
     print("Hello from react-search-agent!")
 
-    result = _agent.invoke({  # type: ignore
-        "messages": [HumanMessage(content="What's the weather in Bengaluru?")]
-    })
+    result = _agent.invoke(
+        {  # type: ignore
+            "messages": [HumanMessage(content="What's the weather in Bengaluru?")]
+        }
+    )
 
     print("Result: ", result)
 
