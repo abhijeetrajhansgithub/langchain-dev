@@ -33,6 +33,7 @@ Create the following:
 2. Two interesting facts about them.
 """
 
+
 _summary_prompt_template = PromptTemplate(
     input_variables=["information"],  # type: ignore
     template=_summary_template,
