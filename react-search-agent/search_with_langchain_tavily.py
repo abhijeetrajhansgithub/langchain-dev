@@ -46,7 +46,7 @@ _agent = create_agent(  # type: ignore
 def main():
     print("Hello from react-search-agent!")
 
-    result = _agent.invoke(
+    result = _agent.invoke(  # type: ignore
         {  # type: ignore
             "messages": [HumanMessage(content="What's the weather in Bengaluru?")]
         }
