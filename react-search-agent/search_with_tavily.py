@@ -4,6 +4,9 @@ from langchain.agents import create_agent  # type: ignore
 from langchain.tools import tool  # type: ignore
 from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
+from tavily import TavilyClient  # type: ignore
+
+_tavily = TavilyClient()
 
 load_dotenv(find_dotenv())
 
@@ -24,7 +27,9 @@ def search(query: str) -> str:
     """
     print(f"Searching for: {query}")
     
-    return "Tokyo's weather is sunny."
+    return _tavily.search(  # type: ignore
+        query=query,
+    )
 
 
 
