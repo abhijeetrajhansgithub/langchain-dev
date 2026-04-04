@@ -7,8 +7,9 @@ from langchain_ollama import ChatOllama
 load_dotenv(find_dotenv())
 
 _ollama_server = os.getenv("OLLAMA_SERVER")
-# gemma3:270m
-# qwen3:4b
+# gemma3:270m -> 291 MB
+# qwen3:4b -> 2.6 GB
+# qwen2.5:1.5b -> 986 MB
 
 _llm = ChatOllama(
     model="gemma3:270m",
