@@ -9,6 +9,7 @@ from tavily import TavilyClient  # type: ignore
 
 load_dotenv(find_dotenv())
 
+
 _tavily = TavilyClient()
 
 _ollama_server = os.getenv("OLLAMA_SERVER")
