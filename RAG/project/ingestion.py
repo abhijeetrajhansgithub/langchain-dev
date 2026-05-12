@@ -2,13 +2,13 @@ import asyncio
 from logger import Logger
 import os
 import ssl 
-from typing import List, Dict, Any
+from typing import List, Dict, Any  # type: ignore
 
 import certifi 
 from dotenv import load_dotenv, find_dotenv
 
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter  # type: ignore
+from langchain_chroma import Chroma  # type: ignore
 from langchain_pinecone import PineconeVectorStore
 from langchain_core.embeddings import Embeddings
 from langchain_core.documents import Document

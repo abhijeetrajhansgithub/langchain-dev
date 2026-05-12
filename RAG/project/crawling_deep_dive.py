@@ -8,11 +8,11 @@ import certifi
 from dotenv import load_dotenv, find_dotenv
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
+from langchain_chroma import Chroma  # type: ignore
 from langchain_pinecone import PineconeVectorStore
 from langchain_core.embeddings import Embeddings
 from langchain_core.documents import Document
-from langchain_tavily import TavilyCrawl, TavilyExtract, TavilyMap
+from langchain_tavily import TavilyCrawl, TavilyExtract, TavilyMap  # type: ignore
 
 import ollama
 
@@ -31,6 +31,24 @@ tavily_map = TavilyMap(
 )
 
 tavily_extract = TavilyExtract()
+
+EMBEDDING_MODEL = "snowflake-arctic-embed:335m"
+
+class OllamaEmbedding(Embeddings):
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        response = ollama.embed(input=texts, model=EMBEDDING_MODEL)
+        return response["embeddings"]
+    
+    def embed_query(self, text: str) -> List[float]:
+        response = ollama.embed(input=[text], model=EMBEDDING_MODEL)
+        return response["embeddings"][0]
+    
+
+def get_vector_store():
+    return PineconeVectorStore(
+        index_name="langchain-docs-2026",
+        embedding=OllamaEmbedding()
+    )
 
 
 def chunk_urls(urls: List[str], batch_size: int = 10) -> List[List[str]]:
@@ -89,6 +107,71 @@ async def async_extract(url_batches: List[List[str]]):
     return all_pages
 
 
+async def index_documents_async(
+    docs: List[Document],
+    batch_size: int = 5,
+    max_concurrency: int = 3
+):
+    logger.header("DOCUMENT INDEXING PIPELINE")
+
+    logger.info(f"Preparing {len(docs)} documents for indexing.")
+
+    batches = [
+        docs[i:i + batch_size]
+        for i in range(0, len(docs), batch_size)
+    ]
+
+    semaphore = asyncio.Semaphore(max_concurrency)
+
+    async def add_batch(batch: List[Document], batch_num: int):
+        async with semaphore:
+            try:
+                vector_store = get_vector_store()
+
+                await vector_store.aadd_documents(batch)
+
+                logger.info(
+                    f"Indexed {len(batch)} documents in batch {batch_num}."
+                )
+
+                return True
+
+            except Exception as e:
+                logger.error(
+                    f"Failed to index {len(batch)} documents in batch {batch_num}."
+                )
+
+                logger.error(f"Error: {e}")
+
+                return False
+
+    tasks = [
+        add_batch(batch, i + 1)
+        for i, batch in enumerate(batches)
+    ]
+
+    results = await asyncio.gather(
+        *tasks,
+        return_exceptions=True
+    )
+
+    successful_batches = sum(
+        1 for result in results if result is True
+    )
+
+    failed_batches = sum(
+        1 for result in results if result is not True
+    )
+
+    logger.info(
+        f"Indexed {successful_batches} batches successfully."
+    )
+
+    logger.info(
+        f"Failed to index {failed_batches} batches."
+    )
+
+
 async def main():
     logger.header("DOCUMENT INGESTION PIPELINE")
 
@@ -111,14 +194,15 @@ async def main():
     # Document Chunking Phase
     logger.header("DOCUMENT CHUNKING PIPELINE")
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
     splitted_docs = text_splitter.split_documents(all_docs)
 
     logger.info(f"RecursiveCharacterTextSplitter: Successfully chunked {len(splitted_docs)} documents.")
 
 
-
+    # Document Indexing Phase
+    await index_documents_async(splitted_docs, batch_size=10)
 
 
 if __name__ == "__main__":
