@@ -53,7 +53,7 @@ def retrieve_context(query: str) -> Tuple[str, List[Any]]:
         Tuple[str, List[Any]]: A tuple containing the retrieved context and the retrieved documents.
     """
 
-    retrieved_docs = vector_store.as_retriever().invoke(query, k=5)
+    retrieved_docs = vector_store.as_retriever().invoke(query, k=25)
 
     serialized: str = "\n\n".join(
         f"Source: {doc.metadata.get('source', 'Unknown')}\n\nContent: {doc.page_content}"  # type: ignore
@@ -82,7 +82,7 @@ def run_llm(query: str) -> Dict[str, Any]:
     "If you cannot find the answer in the retrieved documentation, say so."
     )   
 
-    agent = create_agent(
+    agent = create_agent(  # type: ignore
         model=_model,
         tools=[retrieve_context],
         system_prompt=system_prompt,
@@ -113,8 +113,8 @@ def run_llm(query: str) -> Dict[str, Any]:
     }
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    result = run_llm("What are deep agents?")
+#     result = run_llm("What are deep agents?")
 
-    print(result)
+#     print(result)
