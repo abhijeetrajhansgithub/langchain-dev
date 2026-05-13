@@ -1,11 +1,11 @@
-import os 
+import os                                           # type: ignore
 from dotenv import load_dotenv, find_dotenv
 
 from typing import List, Dict, Any, Tuple
 
-from langchain.agents import create_agent
+from langchain.agents import create_agent           # type: ignore
 from langchain.chat_models import init_chat_model
-from langchain.tools import tool
+from langchain.tools import tool                    # type: ignore
 from langchain_pinecone import PineconeVectorStore
 from langchain.embeddings import Embeddings
 from langchain.messages import ToolMessage
