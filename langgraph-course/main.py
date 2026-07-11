@@ -45,6 +45,8 @@ def main():
     print("Result: ", res)
     print(res["messages"][LAST].content)
 
+    # print(res["messages"][LAST].tool_calls)
+
 
 if __name__ == "__main__":
     main()
